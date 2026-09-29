@@ -1,0 +1,380 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Villa do Aroma — Lanchonete e Cafeteria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F1DFAE;--cream-2:#F8ECC7;--ink:#1F1206;--coffee:#4A2C17;--terracotta:#8B4A1F;--gold:#C9974F;--gold-soft:#E3BE7C;--radius:20px;--art:url("fundo.jpg");--hero-art:url("foto-topo.jpg");--cover:url("capacordel.jpg")}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{background:var(--cream) var(--art) center top/cover no-repeat fixed;color:var(--ink);font-family:Arial,sans-serif;min-height:100vh;overflow-x:hidden;padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+.wrap{width:min(100% - 32px,760px);margin:0 auto}
+/* hero */
+.hero{min-height:70svh;position:relative;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background-image:linear-gradient(to bottom,rgba(31,18,6,.05)0%,rgba(31,18,6,.12)45%,rgba(31,18,6,.78)100%),var(--hero-art);background-size:cover,cover;background-position:center,center top;background-repeat:no-repeat,no-repeat}
+.hero .wrap{width:100%;padding-bottom:48px}
+.hero-content{color:#fff;text-align:center;max-width:620px;margin:auto}
+.hero-kicker{display:inline-block;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:12px;font-weight:700}
+.status-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.28);padding:6px 14px;border-radius:999px;font-size:.8rem;font-weight:700;color:#fff;margin-bottom:12px}
+.perfil-card{background:rgba(241,223,174,.88);padding:32px 0}
+.perfil-inner{display:flex;align-items:center;gap:20px}
+.hero-perfil{justify-content:flex-start;margin:18px 0 0;max-width:380px;width:100%;text-align:left}
+.perfil-logo{flex:0 0 108px;width:108px;height:108px;border-radius:50%;overflow:hidden;border:3px solid var(--gold);box-shadow:0 6px 16px rgba(31,18,6,.18);background:#fff}
+.perfil-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.perfil-info{flex:1;min-width:0}
+.perfil-lista{list-style:none;display:flex;flex-direction:column;gap:5px}
+.perfil-lista li{font-size:.85rem;color:rgba(245,234,201,.92);line-height:1.4}
+@media(max-width:420px){.perfil-inner{gap:14px}.perfil-logo{flex:0 0 84px;width:84px;height:84px}.perfil-lista li{font-size:.78rem}}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#3ecf5f;box-shadow:0 0 0 3px rgba(62,207,95,.25)}
+.status-badge.fechado .status-dot{background:#e5493f;box-shadow:0 0 0 3px rgba(229,73,63,.25)}
+.hero h1{font-family:Georgia,serif;font-size:clamp(2.5rem,12vw,5rem);line-height:.95;font-weight:500;margin-bottom:14px}
+.hero p{font-family:Georgia,serif;font-size:1.05rem;line-height:1.55;color:rgba(255,255,255,.9);max-width:42ch;margin:0 auto 24px}
+.hero-buttons{display:flex;justify-content:center;gap:10px}
+.hero-button{min-height:48px;display:flex;align-items:center;justify-content:center;padding:0 20px;border-radius:999px;text-decoration:none;font-weight:700;font-size:.92rem;transition:.2s ease}
+.hero-button.primary{background:var(--gold);color:var(--ink)}
+.hero-button.secondary{border:1px solid rgba(255,255,255,.55);color:#fff;background:rgba(255,255,255,.08);backdrop-filter:blur(8px)}
+.hero-button:active{transform:scale(.97)}
+/* cordel / caderno 3D */
+.cordel-fechado{appearance:none;-webkit-appearance:none;border:0;background:transparent;padding:0;width:min(346px,92vw);aspect-ratio:346/488;margin:0 auto 42px;display:block;position:relative;cursor:pointer;perspective:1400px;filter:drop-shadow(0 14px 18px rgba(31,18,6,.25))}
+.cordel-fechado::before,.cordel-fechado::after{content:"";position:absolute;inset:0;z-index:-1;border:3px solid #2B1709;border-radius:5px 12px 12px 5px}
+.cordel-fechado::before{background:#D9B16C;transform:translate(7px,8px) rotate(1.1deg)}
+.cordel-fechado::after{background:#CBA062;transform:translate(13px,15px) rotate(2.1deg)}
+.caderno{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform .25s ease}
+.caderno:hover{transform:translateY(-4px) rotate(-.5deg)}
+.cordel-convite{display:flex;align-items:center;justify-content:center;gap:10px;margin:-12px auto 18px;color:var(--terracotta);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;animation:convitePulse 1.8s ease-in-out infinite}
+.cordel-convite .seta{display:inline-flex;font-size:1.35rem;line-height:1;animation:conviteSeta 1s ease-in-out infinite}
+.cordel-convite .toque-icone{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border:2px solid currentColor;border-radius:50%;font-size:.78rem}
+@keyframes convitePulse{0%,100%{opacity:.72}50%{opacity:1}}
+@keyframes conviteSeta{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+.caderno-capa{position:absolute;inset:0;z-index:3;overflow:hidden;transform-origin:left center;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.2,.75,.25,1);border-radius:5px 12px 12px 5px;background:#171310;box-shadow:7px 9px 0 #8B5A2B,12px 13px 18px rgba(31,18,6,.2);backface-visibility:hidden}
+.caderno-capa::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,#F3E6C4 1.8px,transparent 2px)0 0/15px 15px;pointer-events:none;opacity:.25}
+.caderno-capa-conteudo{position:absolute;inset:15px;border:4px solid #171310;border-radius:3px 9px 9px 3px;background:var(--cover) center/cover no-repeat,#F3E6C4}
+.cordel-fechado.aberto .caderno-capa{transform:rotateY(-155deg)}
+.cordel-fechado.aberto .caderno{transform:translateX(8px)}
+/* folhas do cordel */
+.pagina{position:absolute;inset:5px 5px 5px 14px;border:3px solid #2B1709;border-radius:3px 10px 10px 3px;overflow:hidden;background:#E2C083;transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;transition:transform 1s cubic-bezier(.2,.75,.25,1);box-shadow:4px 5px 0 #9C6C38}
+.pagina img{width:100%;height:100%;object-fit:cover;display:block}
+.pg1{z-index:2}
+.pg2{z-index:1}
+.cordel-fechado.pagina2 .pg1{transform:rotateY(-155deg)}
+.espiral{position:absolute;left:-4px;top:14px;bottom:14px;width:24px;z-index:5;display:flex;flex-direction:column;justify-content:space-around;pointer-events:none}
+.espiral i{display:block;width:22px;height:12px;border:4px solid #241207;border-left:0;border-radius:0 50% 50% 0}
+/* seções */
+.rule{border:0;border-top:1px solid rgba(31,18,6,.22);max-width:760px;margin:0 auto}
+section{padding:64px 0;background:rgba(241,223,174,.72)}
+.section-head{text-align:center;margin-bottom:30px}
+.section-head h2{font-family:Georgia,serif;font-weight:600;font-size:clamp(2rem,8vw,2.6rem);line-height:1.1}
+.section-head p{color:var(--coffee);max-width:48ch;margin:12px auto 0;font-size:.96rem;line-height:1.5}
+.sobre p{font-family:Georgia,serif;font-size:1.08rem;line-height:1.7;text-align:center;max-width:52ch;margin:0 auto 18px}
+/* cardápio */
+.menu-list{display:flex;flex-direction:column;gap:14px}
+.menu-item{display:flex;align-items:stretch;min-height:132px;background:#fff;border-radius:18px;box-shadow:0 8px 20px rgba(31,18,6,.10);overflow:hidden;transition:transform .2s ease}
+.menu-item:active{transform:scale(.985)}
+.menu-item .info{flex:1;min-width:0;padding:14px 12px 14px 16px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.menu-item .name{display:block;font-family:Georgia,serif;font-weight:700;font-size:1rem;line-height:1.25;color:var(--ink)}
+.menu-item .desc{display:block;font-size:.78rem;color:#8b8b8b;margin-top:2px;line-height:1.4}
+.menu-item .price{font-weight:800;color:var(--terracotta);font-size:1.02rem;margin-top:2px}
+.menu-item .foto{position:relative;flex:0 0 118px;background:#eee}
+.menu-item .foto img{width:100%;height:100%;object-fit:cover;display:block}
+.menu-item .add{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:var(--terracotta);color:#fff;border:0;display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:800;box-shadow:0 4px 10px rgba(0,0,0,.25);cursor:pointer}
+.menu-item .add:active{transform:scale(.9)}
+/* carrinho */
+.carrinho-bar{position:fixed;z-index:1001;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--terracotta);color:#fff;padding:12px 16px;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.3);font-weight:700;font-size:.9rem;cursor:pointer}
+.carrinho-bar.ativo{display:flex}
+.carrinho-bar span.cta{background:rgba(255,255,255,.18);padding:6px 12px;border-radius:999px;font-size:.82rem}
+.carrinho-overlay{position:fixed;inset:0;z-index:1100;background:rgba(31,18,6,.55);display:none;align-items:flex-end;justify-content:center}
+.carrinho-overlay.ativo{display:flex}
+.carrinho-modal{background:var(--cream-2);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));max-height:78vh;display:flex;flex-direction:column}
+.carrinho-modal h3{font-family:Georgia,serif;font-size:1.3rem;margin-bottom:14px;text-align:center}
+.carrinho-lista{overflow-y:auto;display:flex;flex-direction:column;gap:12px;flex:1}
+.carrinho-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:12px;padding:10px 12px}
+.carrinho-item .ci-nome{font-weight:700;font-size:.88rem}
+.carrinho-item .ci-preco{font-size:.78rem;color:var(--coffee)}
+.carrinho-qtd{display:flex;align-items:center;gap:8px}
+.carrinho-qtd button{width:26px;height:26px;border-radius:50%;border:1px solid var(--terracotta);background:#fff;color:var(--terracotta);font-weight:800;cursor:pointer}
+.carrinho-total{display:flex;justify-content:space-between;font-weight:800;font-size:1rem;margin:14px 0;border-top:1px dashed rgba(31,18,6,.25);padding-top:12px}
+.carrinho-enviar{display:block;width:100%;text-align:center;background:#25D366;color:#fff;font-weight:800;padding:14px;border-radius:14px;border:0;font-size:.95rem;cursor:pointer;text-decoration:none}
+.carrinho-fechar{display:block;margin:10px auto 0;background:none;border:0;color:var(--coffee);font-size:.85rem;text-decoration:underline;cursor:pointer}
+.band{background:rgba(31,18,6,.8);color:var(--cream-2)}
+.band .wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:58px 0}
+.band h3{font-family:Georgia,serif;font-weight:500;font-style:italic;font-size:1.4rem;margin-bottom:12px;color:var(--gold-soft)}
+.band p,.band address{font-style:normal;font-size:.94rem;line-height:1.75;color:rgba(245,234,201,.85)}
+.band a.contato-link{color:var(--gold-soft);text-decoration:none;font-weight:700}
+footer{text-align:center;padding:42px 24px 38px;background:rgba(241,223,174,.78)}
+.fmark{font-family:Georgia,serif;font-style:italic;font-size:1.4rem}
+.social{display:flex;justify-content:center;gap:12px;margin-top:20px;flex-wrap:wrap}
+.social a{min-height:44px;padding:0 18px;display:flex;align-items:center;justify-content:center;color:var(--ink);text-decoration:none;border:1px solid rgba(31,18,6,.2);border-radius:999px;font-size:.86rem;font-weight:700}
+.fine{margin-top:25px;font-size:.75rem;color:var(--coffee);opacity:.75}
+.mobile-nav{position:fixed;z-index:1000;left:12px;right:12px;bottom:calc(8px + env(safe-area-inset-bottom));height:58px;display:flex;align-items:center;justify-content:space-around;background:rgba(31,18,6,.94);border:1px solid rgba(255,255,255,.12);border-radius:22px;box-shadow:0 12px 35px rgba(0,0,0,.25);backdrop-filter:blur(14px)}
+.mobile-nav a{height:54px;min-width:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:rgba(255,255,255,.68);text-decoration:none;font-size:.68rem;font-weight:700;border-radius:16px;transition:.2s ease}
+.mobile-nav a span{font-size:1.15rem;line-height:1}
+.mobile-nav a.active{color:var(--gold-soft);background:rgba(201,151,79,.12)}
+.mobile-nav a:active{transform:scale(.94)}
+@media(min-width:700px){body{padding-bottom:0}.mobile-nav{display:none}.hero{min-height:min(82vh,620px)}.hero .wrap{padding-bottom:80px}section{padding:76px 0}.menu-list{gap:16px}}
+@media(max-width:560px){.band .wrap{grid-template-columns:1fr;gap:30px}}
+@media(max-width:380px){.wrap{width:min(100% - 24px,760px)}.hero{min-height:68svh}.hero .wrap{padding-bottom:38px}.hero h1{font-size:2.35rem}.hero p{font-size:.96rem}.hero-buttons{flex-direction:column;width:100%;max-width:280px;margin:auto}.hero-button{width:100%}section{padding:52px 0}.menu-item{padding:16px}.menu-item .name{font-size:1rem}.menu-item .desc{font-size:.78rem}.menu-item .price{font-size:.92rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<header class="hero" id="inicio">
+  <div class="wrap">
+    <div class="hero-content">
+      <span class="hero-kicker">Lanchonete &amp; Cafeteria</span>
+      <h1>Villa do Aroma</h1>
+      <div class="perfil-inner hero-perfil">
+        <div class="perfil-logo"><img src="https://i.ibb.co/RkqzV8zF/7d880d5e-8951-47cf-b031-48e6243f45fe.jpg" alt="Logo Villa do Aroma"></div>
+        <div class="perfil-info">
+          <span class="status-badge" id="statusBadge"><span class="status-dot"></span><span id="statusTexto">Verificando horário…</span></span>
+          <ul class="perfil-lista">
+            <li>🕐 Seg a sáb — 15h às 20h</li>
+            <li>🕐 Dom — 7h às 12h</li>
+            <li>🕐 Quarta-feira — fechado</li>
+            <li>📍 Rua Elias Cavalcante de Albuquerque, 486</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<hr class="rule">
+
+<section id="sobre">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Nossa história</h2>
+      <p>Abra o nosso cordel e conheça a nossa história.</p>
+    </div>
+
+    <div class="cordel-convite" aria-hidden="true">
+      <span class="toque-icone">☝</span><span>Clique no cordel para abrir</span><span class="seta">↓</span>
+    </div>
+
+    <button class="cordel-fechado" id="abrirCordel" type="button" aria-label="Abrir o cordel e ver as folhas" aria-expanded="false">
+      <span class="caderno">
+        <span class="pagina pg2"><img src="https://i.ibb.co/tT0cRDSR/cd4cc3a3-c889-4e20-bcbe-01f11b9d2ec4.jpg" alt="Folha 2 do cordel"></span>
+        <span class="pagina pg1"><img src="https://i.ibb.co/rKJX0zsx/68991465-e692-410c-97dc-17ef2d9dc14b.jpg" alt="Folha 1 do cordel"></span>
+        <span class="caderno-capa"><span class="caderno-capa-conteudo"></span></span>
+      </span>
+    </button>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="cardapio">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Cardápio</h2>
+      <p>Veja o que sai mais quente da nossa cozinha.</p>
+    </div>
+    <div class="menu-list">
+      <article class="menu-item">
+        <div class="info"><span class="name">Café</span><span class="desc">Coado na hora, quentinho</span><span class="price">R$ 5,00</span></div>
+        <div class="foto"><img src="https://i.ibb.co/CpzbhrGd/5bb06e85-fa06-44d9-b319-adcef248ddfa.jpg" alt="Café"><button type="button" class="add" data-name="Café" data-price="5.00">+</button></div>
+      </article>
+      <article class="menu-item">
+        <div class="info"><span class="name">Fanta</span><span class="desc">Gelada, lata 350ml</span><span class="price">R$ 6,00</span></div>
+        <div class="foto"><img src="https://i.ibb.co/tMBbv2PK/e3e15dd4-bca2-4cae-8be8-0b5e51c7f0d0.jpg" alt="Fanta"><button type="button" class="add" data-name="Fanta" data-price="6.00">+</button></div>
+      </article>
+      <article class="menu-item">
+        <div class="info"><span class="name">Empada de frango</span><span class="desc">Massa crocante, recheio caprichado</span><span class="price">R$ 8,00</span></div>
+        <div class="foto"><img src="https://i.ibb.co/7dncPGjD/22d4d82b-4c5d-4e39-b5be-eb530d77bfb1.jpg" alt="Empada de frango"><button type="button" class="add" data-name="Empada de frango" data-price="8.00">+</button></div>
+      </article>
+      <article class="menu-item">
+        <div class="info"><span class="name">Tapioca de queijo</span><span class="desc">Goma fresca, na chapa</span><span class="price">R$ 10,00</span></div>
+        <div class="foto"><img src="https://i.ibb.co/cXtpCcQ3/777547a6-d21e-47ed-bdeb-87d81e1e6f0e.jpg" alt="Tapioca de queijo"><button type="button" class="add" data-name="Tapioca de queijo" data-price="10.00">+</button></div>
+      </article>
+      <article class="menu-item">
+        <div class="info"><span class="name">Tapioca de frango</span><span class="desc">Recheio generoso</span><span class="price">R$ 12,00</span></div>
+        <div class="foto"><img src="https://i.ibb.co/bgpTVNKF/726c46e8-5b75-4699-82d5-5014a94ed1f8.jpg" alt="Tapioca de frango"><button type="button" class="add" data-name="Tapioca de frango" data-price="12.00">+</button></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="local">
+  <div class="wrap">
+    <div>
+      <h3>Horário</h3>
+      <p>Segunda a sábado — 15h às 20h<br>Domingo — 7h às 12h<br>Quarta-feira — fechado</p>
+      <h3 style="margin-top:24px;">Contato</h3>
+      <p>
+        <a class="contato-link" href="https://wa.me/558382236318" target="_blank" rel="noopener">WhatsApp: (83) 8223-6318</a><br>
+        <a class="contato-link" href="https://instagram.com/villadoaroma" target="_blank" rel="noopener">Instagram: @villadoaroma</a>
+      </p>
+    </div>
+    <div>
+      <h3>Onde estamos</h3>
+      <address>Rua Elias Cavalcante de Albuquerque, 486</address>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fmark">Villa do Aroma</div>
+  <div class="social">
+    <a href="https://instagram.com/villadoaroma" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://wa.me/558382236318" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+  <p class="fine">Villa do Aroma · Lanchonete e Cafeteria</p>
+</footer>
+
+<audio id="somAmbiente" src="musica-nordestina.mp3" loop preload="none"></audio>
+
+<div class="carrinho-bar" id="carrinhoBar">
+  <span id="carrinhoResumo">0 itens · R$ 0,00</span>
+  <span class="cta">Ver pedido</span>
+</div>
+
+<div class="carrinho-overlay" id="carrinhoOverlay">
+  <div class="carrinho-modal">
+    <h3>Seu pedido</h3>
+    <div class="carrinho-lista" id="carrinhoLista"></div>
+    <div class="carrinho-total"><span>Total</span><span id="carrinhoTotalValor">R$ 0,00</span></div>
+    <a class="carrinho-enviar" id="enviarPedido" href="#" target="_blank" rel="noopener">Enviar pedido pelo WhatsApp</a>
+    <button class="carrinho-fechar" id="fecharCarrinho" type="button">Continuar vendo o cardápio</button>
+  </div>
+</div>
+
+<nav class="mobile-nav" aria-label="Navegação principal">
+  <a href="#inicio" class="active"><span>⌂</span>Início</a>
+  <a href="#sobre"><span>♡</span>História</a>
+  <a href="#cardapio"><span>☕</span>Cardápio</a>
+  <a href="#local"><span>⌖</span>Local</a>
+</nav>
+
+<script>
+const somAmbiente = document.getElementById('somAmbiente');
+function iniciarSom(){
+  if (!somAmbiente || !somAmbiente.paused) return;
+  somAmbiente.volume = .55;
+  somAmbiente.play().catch(()=>{});
+}
+
+/* cordel: 0 fechado, 1 folha 1, 2 folha 2 */
+const btn = document.getElementById('abrirCordel');
+let etapa = 0;
+btn?.addEventListener('click', () => {
+  etapa = (etapa + 1) % 3;
+  btn.classList.toggle('aberto', etapa >= 1);
+  btn.classList.toggle('pagina2', etapa >= 2);
+  btn.setAttribute('aria-expanded', etapa > 0);
+  if (etapa === 1) iniciarSom();
+  if (etapa === 0) somAmbiente?.pause();
+});
+
+const links = document.querySelectorAll('.mobile-nav a');
+const secs = ['inicio','sobre','cardapio','local'].map(id => document.getElementById(id));
+function syncNav(){
+  const y = window.scrollY + innerHeight * .35;
+  let cur = 'inicio';
+  secs.forEach(s => { if (s && y >= s.offsetTop) cur = s.id; });
+  links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+}
+addEventListener('scroll', syncNav, { passive:true });
+syncNav();
+
+/* status aberto/fechado */
+function atualizarStatus(){
+  const badge = document.getElementById('statusBadge');
+  const texto = document.getElementById('statusTexto');
+  if (!badge || !texto) return;
+  const agora = new Date();
+  const dia = agora.getDay();
+  const minutos = agora.getHours() * 60 + agora.getMinutes();
+  let aberto = false;
+  if (dia === 0) aberto = minutos >= 7*60 && minutos < 12*60;
+  else if (dia === 3) aberto = false;
+  else aberto = minutos >= 15*60 && minutos < 20*60;
+  badge.classList.toggle('fechado', !aberto);
+  texto.textContent = aberto ? 'Aberto agora' : 'Fechado';
+}
+atualizarStatus();
+setInterval(atualizarStatus, 60000);
+
+/* carrinho */
+const NUMERO_WHATSAPP = '558382236318';
+let carrinho = {};
+function formatarReal(v){ return 'R$ ' + v.toFixed(2).replace('.', ','); }
+function totalCarrinho(){ return Object.values(carrinho).reduce((s, i) => s + i.preco * i.qtd, 0); }
+function totalItens(){ return Object.values(carrinho).reduce((s, i) => s + i.qtd, 0); }
+
+function renderCarrinho(){
+  const bar = document.getElementById('carrinhoBar');
+  const resumo = document.getElementById('carrinhoResumo');
+  const lista = document.getElementById('carrinhoLista');
+  const totalValor = document.getElementById('carrinhoTotalValor');
+  const enviar = document.getElementById('enviarPedido');
+  const itens = totalItens();
+
+  if (bar && resumo) {
+    bar.classList.toggle('ativo', itens > 0);
+    resumo.textContent = itens + (itens === 1 ? ' item · ' : ' itens · ') + formatarReal(totalCarrinho());
+  }
+  if (lista) {
+    lista.innerHTML = '';
+    Object.keys(carrinho).forEach(nome => {
+      const item = carrinho[nome];
+      if (item.qtd <= 0) return;
+      const linha = document.createElement('div');
+      linha.className = 'carrinho-item';
+      linha.innerHTML = `
+        <div><div class="ci-nome">${nome}</div><div class="ci-preco">${formatarReal(item.preco)} cada</div></div>
+        <div class="carrinho-qtd">
+          <button type="button" data-acao="menos" data-nome="${nome}">−</button>
+          <span>${item.qtd}</span>
+          <button type="button" data-acao="mais" data-nome="${nome}">+</button>
+        </div>`;
+      lista.appendChild(linha);
+    });
+  }
+  if (totalValor) totalValor.textContent = formatarReal(totalCarrinho());
+  if (enviar) {
+    let msg = 'Olá! Gostaria de fazer o seguinte pedido:%0A%0A';
+    Object.keys(carrinho).forEach(nome => {
+      const item = carrinho[nome];
+      if (item.qtd <= 0) return;
+      msg += `${item.qtd}x ${nome} - ${formatarReal(item.preco * item.qtd)}%0A`;
+    });
+    msg += `%0ATotal: ${formatarReal(totalCarrinho())}`;
+    enviar.href = `https://wa.me/${NUMERO_WHATSAPP}?text=${msg}`;
+  }
+}
+
+document.querySelectorAll('.menu-item .add').forEach(botao => {
+  botao.addEventListener('click', () => {
+    const nome = botao.dataset.name;
+    const preco = parseFloat(botao.dataset.price);
+    if (!carrinho[nome]) carrinho[nome] = { preco, qtd: 0 };
+    carrinho[nome].qtd += 1;
+    renderCarrinho();
+  });
+});
+
+document.getElementById('carrinhoLista')?.addEventListener('click', (ev) => {
+  const b = ev.target.closest('button[data-acao]');
+  if (!b) return;
+  const nome = b.dataset.nome;
+  if (!carrinho[nome]) return;
+  if (b.dataset.acao === 'mais') carrinho[nome].qtd += 1;
+  if (b.dataset.acao === 'menos') carrinho[nome].qtd = Math.max(0, carrinho[nome].qtd - 1);
+  renderCarrinho();
+});
+
+document.getElementById('carrinhoBar')?.addEventListener('click', () => {
+  document.getElementById('carrinhoOverlay')?.classList.add('ativo');
+});
+document.getElementById('fecharCarrinho')?.addEventListener('click', () => {
+  document.getElementById('carrinhoOverlay')?.classList.remove('ativo');
+});
+document.getElementById('carrinhoOverlay')?.addEventListener('click', (ev) => {
+  if (ev.target.id === 'carrinhoOverlay') ev.currentTarget.classList.remove('ativo');
+});
+</script>
+</body>
+</html>
