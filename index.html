@@ -259,8 +259,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--art) 
         <div class="perfil-info">
           <span class="status-badge" id="statusBadge"><span class="status-dot"></span><span id="statusTexto">Verificando horário…</span></span>
           <ul class="perfil-lista">
-            <li>🕐 Seg a sáb — 15h às 20h</li>
-            <li>🕐 Dom — 7h às 12h</li>
+            <li>🕐 Seg a sáb — 17h às 22h</li>
+            <li>🕐 Dom — 8h às 12h</li>
             <li>🕐 Quarta-feira — fechado</li>
             <li>📍 Rua Elias Cavalcante de Albuquerque, 486</li>
           </ul>
@@ -334,7 +334,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--art) 
   <div class="wrap">
     <div>
       <h3>Horário</h3>
-      <p>Segunda a sábado — 15h às 20h<br>Domingo — 7h às 12h<br>Quarta-feira — fechado</p>
+      <p>Segunda a sábado — 17h às 22h<br>Domingo — 8h às 12h<br>Quarta-feira — fechado</p>
       <h3 style="margin-top:24px;">Contato</h3>
       <p>
         <a class="contato-link" href="https://wa.me/558382236318" target="_blank" rel="noopener">WhatsApp: (83) 8223-6318</a><br>
@@ -419,13 +419,13 @@ syncNav();
 
 /* status aberto/fechado */
 const HORARIOS = {          // [abre, fecha] em horas; null = fechado o dia todo
-  0: [7, 12],               // domingo
-  1: [15, 20],              // segunda
-  2: [15, 20],              // terça
+  0: [8, 12],               // domingo
+  1: [17, 22],              // segunda
+  2: [17, 22],              // terça
   3: null,                  // quarta
-  4: [15, 20],              // quinta
-  5: [15, 20],              // sexta
-  6: [15, 20]               // sábado
+  4: [17, 22],              // quinta
+  5: [17, 22],              // sexta
+  6: [17, 22]               // sábado
 };
 const NOMES_DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
 
