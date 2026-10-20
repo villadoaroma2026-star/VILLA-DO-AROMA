@@ -150,6 +150,12 @@ button{font-family:inherit}
 .menu-item.esgotado .foto::after{content:"";position:absolute;inset:0;background:rgba(31,18,6,.28);pointer-events:none}
 .produto-esgotado{display:inline-flex;align-items:center;width:max-content;padding:5px 9px;border:2px solid #2B1709;border-radius:4px;background:#8B1E1E;color:#fff;font-family:var(--f-nome);font-size:.72rem;font-weight:400;letter-spacing:.06em;margin-top:2px;box-shadow:2px 2px 0 #2B1709}
 
+/* Loja fechada: botões de pedido ficam apagados */
+body.loja-fechada .menu-item .add{opacity:.45;filter:grayscale(.6)}
+body.loja-fechada .carrinho-enviar{background:#8b8b8b;opacity:.7}
+.aviso-fechado{display:none;background:#8B1E1E;color:#fff;border:2px solid #2B1709;border-radius:6px;padding:10px 12px;margin-bottom:12px;font-family:var(--f-nome);font-size:.8rem;text-align:center;line-height:1.4}
+body.loja-fechada .aviso-fechado{display:block}
+
 .mobile-nav{--furo:#1F1206;height:66px;padding:0 6px;background:#1F1206;border:3px solid var(--gold);border-radius:12px;box-shadow:4px 4px 0 rgba(0,0,0,.45)}
 .mobile-nav a{--furo:#1F1206;height:56px;min-width:74px;gap:4px;font-size:.66rem;color:rgba(248,236,199,.75);border:2px solid transparent;border-radius:8px}
 .mobile-nav a span{display:block}
@@ -251,7 +257,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--art) 
         <div class="perfil-info">
           <span class="status-badge" id="statusBadge"><span class="status-dot"></span><span id="statusTexto">Verificando horário…</span></span>
           <ul class="perfil-lista">
-            <li>🕐 Seg a sáb — 17h às 22h</li>
+            <li id="horarioSemanaHero">🕐 Seg a sáb — 17h às 22h</li>
             <li>🕐 Dom — 8h às 12h</li>
             <li>🕐 Quarta-feira — fechado</li>
             <li>📍 Rua Elias Cavalcante de Albuquerque, 486</li>
@@ -326,7 +332,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--art) 
   <div class="wrap">
     <div>
       <h3>Horário</h3>
-      <p>Segunda a sábado — 17h às 22h<br>Domingo — 8h às 12h<br>Quarta-feira — fechado</p>
+      <p><span id="horarioSemanaBand">Segunda a sábado — 17h às 22h</span><br>Domingo — 8h às 12h<br>Quarta-feira — fechado</p>
       <h3 style="margin-top:24px;">Contato</h3>
       <p>
         <a class="contato-link" href="https://wa.me/558382236318" target="_blank" rel="noopener">WhatsApp: (83) 8223-6318</a><br>
@@ -355,6 +361,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--art) 
 <div class="carrinho-overlay" id="carrinhoOverlay">
   <div class="carrinho-modal">
     <h3>Seu pedido</h3>
+    <div class="aviso-fechado" id="avisoFechado">Estamos fechados no momento.</div>
     <div class="carrinho-lista" id="carrinhoLista"></div>
     <div class="carrinho-total"><span>Total</span><span id="carrinhoTotalValor">R$ 0,00</span></div>
     <a class="carrinho-enviar" id="enviarPedido" href="#" target="_blank" rel="noopener">Enviar pedido pelo WhatsApp</a>
@@ -408,26 +415,56 @@ let _tick=false;
 addEventListener('scroll', () => { if (_tick) return; _tick = true; requestAnimationFrame(() => { syncNav(); _tick = false; }); }, { passive:true });
 syncNav();
 
-const HORARIOS = {
-  0: [8, 12],
-  1: [17, 22],
-  2: [17, 22],
-  3: null,
-  4: [17, 22],
-  5: [17, 22],
-  6: [17, 22]
-};
+/* =========================
+   HORÁRIO / ABERTO-FECHADO
+   (configurável pelo painel ADM)
+========================= */
+const FUSO = 'America/Fortaleza';
 const NOMES_DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
 
-function proximaAbertura(agora){
-  const dia = agora.getDay();
-  const minutos = agora.getHours() * 60 + agora.getMinutes();
+/* Valores padrão — usados até o Supabase responder (ou se falhar) */
+let CONFIG = { modo: 'automatico', abre: 17 * 60, fecha: 22 * 60 };
+
+/* Domingo e quarta seguem fixos; os demais dias usam o horário do painel */
+function horarioDoDia(dia){
+  if (dia === 0) return [8 * 60, 12 * 60];
+  if (dia === 3) return null;
+  return [CONFIG.abre, CONFIG.fecha];
+}
+
+function fmtHora(min){
+  const h = Math.floor(min / 60), m = min % 60;
+  return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`;
+}
+
+function agoraFortaleza(){
+  const partes = new Intl.DateTimeFormat('en-US', {
+    timeZone: FUSO, weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+  }).formatToParts(new Date());
+  const o = {};
+  partes.forEach(p => o[p.type] = p.value);
+  const dia = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 }[o.weekday];
+  return { dia, min: Number(o.hour) * 60 + Number(o.minute) };
+}
+
+function lojaAbertaAgora(){
+  if (CONFIG.modo === 'aberto') return true;
+  if (CONFIG.modo === 'fechado') return false;
+  const { dia, min } = agoraFortaleza();
+  const h = horarioDoDia(dia);
+  if (!h) return false;
+  if (h[1] <= h[0]) return min >= h[0] || min < h[1]; // fecha depois da meia-noite
+  return min >= h[0] && min < h[1];
+}
+
+function proximaAbertura(){
+  const { dia, min } = agoraFortaleza();
   for (let d = 0; d <= 7; d++){
-    const h = HORARIOS[(dia + d) % 7];
+    const h = horarioDoDia((dia + d) % 7);
     if (!h) continue;
-    if (d === 0 && minutos >= h[0] * 60) continue;
-    const quando = d === 0 ? 'hoje' : NOMES_DIAS[(dia + d) % 7];
-    return `Abre ${quando} às ${h[0]}h`;
+    if (d === 0 && min >= h[0]) continue;
+    const quando = d === 0 ? 'hoje' : (d === 1 ? 'amanhã' : NOMES_DIAS[(dia + d) % 7]);
+    return `Abre ${quando} às ${fmtHora(h[0])}`;
   }
   return 'Fechado';
 }
@@ -435,19 +472,43 @@ function proximaAbertura(agora){
 function atualizarStatus(){
   const badge = document.getElementById('statusBadge');
   const texto = document.getElementById('statusTexto');
-  if (!badge || !texto) return;
-  const agora = new Date();
-  const h = HORARIOS[agora.getDay()];
-  const minutos = agora.getHours() * 60 + agora.getMinutes();
-  const aberto = !!h && minutos >= h[0] * 60 && minutos < h[1] * 60;
+  const aberto = lojaAbertaAgora();
 
+  window.lojaAberta = aberto;
+  document.body.classList.toggle('loja-fechada', !aberto);
+
+  /* horários mostrados no site acompanham o painel */
+  const faixa = `${fmtHora(CONFIG.abre)} às ${fmtHora(CONFIG.fecha)}`;
+  const hero = document.getElementById('horarioSemanaHero');
+  const band = document.getElementById('horarioSemanaBand');
+  if (hero) hero.textContent = `🕐 Seg a sáb — ${faixa}`;
+  if (band) band.textContent = `Segunda a sábado — ${faixa}`;
+
+  const aviso = document.getElementById('avisoFechado');
+  if (aviso) aviso.textContent = `Estamos fechados no momento. ${proximaAbertura()}.`;
+
+  if (!badge || !texto) return;
   badge.classList.toggle('fechado', !aberto);
-  texto.textContent = aberto
-    ? `Aberto agora · fecha às ${h[1]}h`
-    : `Fechado · ${proximaAbertura(agora)}`;
+
+  if (aberto){
+    if (CONFIG.modo === 'aberto'){
+      texto.textContent = 'Aberto agora';
+    } else {
+      const h = horarioDoDia(agoraFortaleza().dia);
+      texto.textContent = `Aberto agora · fecha às ${fmtHora(h[1])}`;
+    }
+  } else {
+    texto.textContent = CONFIG.modo === 'fechado'
+      ? 'Fechado no momento'
+      : `Fechado · ${proximaAbertura()}`;
+  }
 }
 atualizarStatus();
 setInterval(atualizarStatus, 60000);
+
+function avisarFechado(){
+  alert('Estamos fechados no momento e não é possível fazer pedidos agora.\n' + proximaAbertura() + '.');
+}
 
 const NUMERO_WHATSAPP = '558382236318';
 let carrinho = {};
@@ -500,6 +561,7 @@ function renderCarrinho(){
 function ativarBotoesCarrinho(){
   document.querySelectorAll('.menu-item .add').forEach(botao => {
     botao.addEventListener('click', () => {
+      if (!window.lojaAberta) { avisarFechado(); return; }
       const nome = botao.dataset.name;
       const preco = parseFloat(botao.dataset.price);
       if (!carrinho[nome]) carrinho[nome] = { preco, qtd: 0 };
@@ -517,6 +579,13 @@ document.getElementById('carrinhoLista')?.addEventListener('click', (ev) => {
   if (b.dataset.acao === 'mais') carrinho[nome].qtd += 1;
   if (b.dataset.acao === 'menos') carrinho[nome].qtd = Math.max(0, carrinho[nome].qtd - 1);
   renderCarrinho();
+});
+
+document.getElementById('enviarPedido')?.addEventListener('click', (ev) => {
+  if (!window.lojaAberta) {
+    ev.preventDefault();
+    avisarFechado();
+  }
 });
 
 document.getElementById('carrinhoBar')?.addEventListener('click', () => {
@@ -537,6 +606,41 @@ function escaparHTML(valor){
   return String(valor).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 function escaparAtributo(valor){ return escaparHTML(valor); }
+
+/* =========================
+   CONFIGURAÇÃO DA LOJA (Supabase)
+========================= */
+function horaParaMinutos(valor){
+  const [h, m] = String(valor || '').split(':');
+  return Number(h) * 60 + Number(m || 0);
+}
+
+async function carregarConfigLoja(){
+  try{
+    const { data, error } = await supabaseClient
+      .from("configuracoes_loja")
+      .select("*")
+      .eq("id", 1)
+      .single();
+
+    if (error || !data) {
+      if (error) console.error("Erro ao carregar horário:", error);
+      return;
+    }
+
+    CONFIG.modo = data.modo || 'automatico';
+    const abre = horaParaMinutos(data.horario_abertura);
+    const fecha = horaParaMinutos(data.horario_fechamento);
+    if (!isNaN(abre)) CONFIG.abre = abre;
+    if (!isNaN(fecha)) CONFIG.fecha = fecha;
+
+    atualizarStatus();
+  }catch(e){
+    console.error(e);
+  }
+}
+carregarConfigLoja();
+setInterval(carregarConfigLoja, 60000);
 
 let produtosCardapio = [];
 
