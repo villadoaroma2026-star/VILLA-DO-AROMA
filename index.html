@@ -643,6 +643,43 @@ const SUPABASE_URL = "https://zjgrurkxgjkwwaelgrbl.supabase.co";
 const SUPABASE_KEY = "sb_publishable_4G7as3wHoAoJkYCDV8XHGg_jXe3v-UK";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+/* =========================
+   LICENÇA DO SITE
+========================= */
+
+async function verificarLicenca() {
+    try {
+        const { data, error } = await supabaseClient.rpc("licenca_ok");
+
+        if (error || data !== false) return;
+
+        if (document.getElementById("licencaBloqueio")) return;
+
+        const tela = document.createElement("div");
+        tela.id = "licencaBloqueio";
+        tela.style.cssText =
+            "position:fixed;inset:0;z-index:2147483647;background:#1F1206;" +
+            "color:#F8ECC7;display:flex;align-items:center;justify-content:center;" +
+            "text-align:center;padding:30px;font-family:Arial,sans-serif;";
+        tela.innerHTML =
+            "<div style='max-width:420px'>" +
+            "<h1 style='margin:0 0 14px;font-size:1.6rem'>Site temporariamente indisponível</h1>" +
+            "<p style='margin:0;line-height:1.6;opacity:.85'>" +
+            "Este site está suspenso no momento. " +
+            "Entre em contato com o responsável pelo site para regularizar o acesso." +
+            "</p></div>";
+
+        document.body.appendChild(tela);
+        document.body.style.overflow = "hidden";
+    } catch (e) {
+        /* se a verificação falhar, não bloqueia */
+    }
+}
+
+verificarLicenca();
+setInterval(verificarLicenca, 5 * 60 * 1000);
+
+
 function escaparHTML(valor){
   return String(valor).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
