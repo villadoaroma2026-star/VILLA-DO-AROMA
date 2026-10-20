@@ -257,10 +257,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--art) 
         <div class="perfil-info">
           <span class="status-badge" id="statusBadge"><span class="status-dot"></span><span id="statusTexto">Verificando horário…</span></span>
           <ul class="perfil-lista">
-            <li id="horarioSemanaHero">🕐 Seg a sáb — 17h às 22h</li>
-            <li>🕐 Dom — 8h às 12h</li>
-            <li>🕐 Quarta-feira — fechado</li>
-            <li>📍 Rua Elias Cavalcante de Albuquerque, 486</li>
+            <li class="li-horario">🕐 Seg a sáb — 17h às 22h</li>
+            <li class="li-horario">🕐 Dom — 8h às 12h</li>
+            <li class="li-horario">🕐 Quarta-feira — fechado</li>
+            <li id="enderecoHero">📍 Rua Elias Cavalcante de Albuquerque, 486</li>
           </ul>
         </div>
       </div>
@@ -332,7 +332,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--art) 
   <div class="wrap">
     <div>
       <h3>Horário</h3>
-      <p><span id="horarioSemanaBand">Segunda a sábado — 17h às 22h</span><br>Domingo — 8h às 12h<br>Quarta-feira — fechado</p>
+      <p id="horariosBand">Segunda a sábado — 17h às 22h<br>Domingo — 8h às 12h<br>Quarta-feira — fechado</p>
       <h3 style="margin-top:24px;">Contato</h3>
       <p>
         <a class="contato-link" href="https://wa.me/558382236318" target="_blank" rel="noopener">WhatsApp: (83) 8223-6318</a><br>
@@ -423,13 +423,59 @@ const FUSO = 'America/Fortaleza';
 const NOMES_DIAS = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
 
 /* Valores padrão — usados até o Supabase responder (ou se falhar) */
-let CONFIG = { modo: 'automatico', abre: 17 * 60, fecha: 22 * 60 };
+const HORARIOS_PADRAO = [
+  { aberto: true,  abre: '08:00', fecha: '12:00' }, // domingo
+  { aberto: true,  abre: '17:00', fecha: '22:00' }, // segunda
+  { aberto: true,  abre: '17:00', fecha: '22:00' }, // terça
+  { aberto: false, abre: '17:00', fecha: '22:00' }, // quarta
+  { aberto: true,  abre: '17:00', fecha: '22:00' }, // quinta
+  { aberto: true,  abre: '17:00', fecha: '22:00' }, // sexta
+  { aberto: true,  abre: '17:00', fecha: '22:00' }  // sábado
+];
+let CONFIG = { modo: 'automatico', horarios: HORARIOS_PADRAO };
 
-/* Domingo e quarta seguem fixos; os demais dias usam o horário do painel */
+/* Cada dia tem seu próprio horário (ou fica fechado) — tudo vem do painel */
 function horarioDoDia(dia){
-  if (dia === 0) return [8 * 60, 12 * 60];
-  if (dia === 3) return null;
-  return [CONFIG.abre, CONFIG.fecha];
+  const h = CONFIG.horarios[dia];
+  if (!h || !h.aberto) return null;
+  return [horaParaMinutos(h.abre), horaParaMinutos(h.fecha)];
+}
+
+const ORDEM_SEMANA = [1, 2, 3, 4, 5, 6, 0];
+const DIAS_CURTO = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DIAS_LONGO = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+/* Junta dias seguidos com o mesmo horário: "Seg e ter — 17h às 22h" */
+function linhasHorarios(longo){
+  const nomes = longo ? DIAS_LONGO : DIAS_CURTO;
+  const grupos = [];
+  ORDEM_SEMANA.forEach(d => {
+    const h = horarioDoDia(d);
+    const chave = h ? h[0] + '-' + h[1] : 'fechado';
+    const ultimo = grupos[grupos.length - 1];
+    if (ultimo && ultimo.chave === chave) ultimo.dias.push(d);
+    else grupos.push({ chave, h, dias: [d] });
+  });
+  return grupos.map(g => {
+    const a = nomes[g.dias[0]], b = nomes[g.dias[g.dias.length - 1]];
+    const dias = g.dias.length === 1 ? a : (g.dias.length === 2 ? a + ' e ' + b.toLowerCase() : a + ' a ' + b.toLowerCase());
+    return g.h ? `${dias} — ${fmtHora(g.h[0])} às ${fmtHora(g.h[1])}` : `${dias} — fechado`;
+  });
+}
+
+function renderHorarios(){
+  const endereco = document.getElementById('enderecoHero');
+  if (endereco) {
+    document.querySelectorAll('.li-horario').forEach(el => el.remove());
+    linhasHorarios(false).forEach(linha => {
+      const li = document.createElement('li');
+      li.className = 'li-horario';
+      li.textContent = '🕐 ' + linha;
+      endereco.parentNode.insertBefore(li, endereco);
+    });
+  }
+  const band = document.getElementById('horariosBand');
+  if (band) band.innerHTML = linhasHorarios(true).map(escaparHTML).join('<br>');
 }
 
 function fmtHora(min){
@@ -477,12 +523,7 @@ function atualizarStatus(){
   window.lojaAberta = aberto;
   document.body.classList.toggle('loja-fechada', !aberto);
 
-  /* horários mostrados no site acompanham o painel */
-  const faixa = `${fmtHora(CONFIG.abre)} às ${fmtHora(CONFIG.fecha)}`;
-  const hero = document.getElementById('horarioSemanaHero');
-  const band = document.getElementById('horarioSemanaBand');
-  if (hero) hero.textContent = `🕐 Seg a sáb — ${faixa}`;
-  if (band) band.textContent = `Segunda a sábado — ${faixa}`;
+  renderHorarios(); /* horários mostrados no site acompanham o painel */
 
   const aviso = document.getElementById('avisoFechado');
   if (aviso) aviso.textContent = `Estamos fechados no momento. ${proximaAbertura()}.`;
@@ -629,10 +670,9 @@ async function carregarConfigLoja(){
     }
 
     CONFIG.modo = data.modo || 'automatico';
-    const abre = horaParaMinutos(data.horario_abertura);
-    const fecha = horaParaMinutos(data.horario_fechamento);
-    if (!isNaN(abre)) CONFIG.abre = abre;
-    if (!isNaN(fecha)) CONFIG.fecha = fecha;
+    if (Array.isArray(data.horarios) && data.horarios.length === 7) {
+      CONFIG.horarios = data.horarios;
+    }
 
     atualizarStatus();
   }catch(e){
